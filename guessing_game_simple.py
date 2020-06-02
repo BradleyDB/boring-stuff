@@ -33,7 +33,7 @@ if int_guess == secret_Number:
     if int(guesses_taken) > 1: #this tells the user how many guesses it gook to be correct
         print("Good job, " + name + "! You guessed my number in " + str(guesses_taken) + " guesses.")
     else: 
-        print("Good job, " + name + "! You guessed my number in " + str(guesses_taken) + " guess.")
+        print("Good job, " + name + "! You guessed my number on your first try!")
 else: #tells the user what the number was if they did not guess correctly
     print("Nope. The number I was thinking of was " + str(secret_Number) + ".")
         

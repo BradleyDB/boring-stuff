@@ -54,6 +54,14 @@ www\d{0,3}[.]|          #a www or host name 'mirror' domain;
 [^\s`!()\[\]{};:'\".,<>?«»“”‘’])
 )''',re.VERBOSE)
 
+#Make a function that adds extracted text to a list    
+def make_list(extracted_list_variable_name):
+    new_empty_list = []
+    for thing in extracted_list_variable_name:
+        new_empty_list.append(thing[0])
+    return new_empty_list
+
+
 #Get the text off the clipboard
 
 text = pyperclip.paste()
@@ -64,13 +72,9 @@ extracted_phone = phone_number_regex.findall(text)
 extracted_email = email_regex.findall(text)
 extracted_url = website_regex.findall(text)
 
-all_phone = []
-for phone_number in extracted_phone:
-    all_phone.append(phone_number[0])
-
-all_url = []
-for url in extracted_url:
-    all_url.append(url[0])
+#Add results to a list calling the make_list() function
+all_phone = make_list(extracted_phone)
+all_url = make_list(extracted_url)
 
 #Copy the extracted email/phone numbers to the cliboard
     

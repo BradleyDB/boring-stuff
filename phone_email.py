@@ -12,7 +12,7 @@ import re
 import pyperclip
 
 
-#TODO: Create a regular expression object for phone numbers
+#Create a regular expression object for phone numbers
 phone_number_regex = re.compile(r'''
 #Phone number types 123-555-1234,123-5555,(123)-123-5555,(123) 123-1234,3333331234,123.123.1234,123-1234 ext 123, ext. 123, x1234           
 
@@ -62,6 +62,15 @@ def make_list(extracted_list_variable_name):
     return new_empty_list
 
 
+#Make a function that counts the number of items returned from a list
+    
+def count_of_things(extracted_list_variable_name):
+    new_empty_list = []
+    for thing in extracted_list_variable_name:
+        new_empty_list.append(thing[0])
+    return str(len(new_empty_list))
+
+
 #Get the text off the clipboard
 
 text = pyperclip.paste()
@@ -72,11 +81,18 @@ extracted_phone = phone_number_regex.findall(text)
 extracted_email = email_regex.findall(text)
 extracted_url = website_regex.findall(text)
 
-#Add results to a list calling the make_list() function
+#Add results to a list calling the make_list() function for extractions with 2+ groups
+
 all_phone = make_list(extracted_phone)
 all_url = make_list(extracted_url)
 
+#Get the count of items in each list
+
+phone_number_count = count_of_things(extracted_phone)
+email_count = (str(len(extracted_email)))
+url_count = count_of_things(extracted_url)
+
 #Copy the extracted email/phone numbers to the cliboard
     
-output = 'Found Phone Numbers:' + '\n' + '\n'.join(all_phone) + '\n' + '\n' + 'Found Email Addresses:' + '\n' + '\n'.join(extracted_email) + '\n' + '\n' + 'Found URLs:' + '\n' + '\n'.join(all_url)
+output = 'Found the Following ' + phone_number_count + ' Phone Numbers:' + '\n' + '\n'.join(all_phone) + '\n' + '\n' + 'Found the Following ' + email_count + ' Email Addresses:' + '\n' + '\n'.join(extracted_email) + '\n' + '\n' + 'Found the following ' + url_count + ' URLs:' + '\n' + '\n'.join(all_url)
 pyperclip.copy(output)

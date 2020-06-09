@@ -78,5 +78,5 @@ all_url = make_list(extracted_url)
 
 #Copy the extracted email/phone numbers to the cliboard
     
-    output = 'Found Phone Numbers:' + '\n' + '\n'.join(all_phone) + '\n' + '\n' + 'Found Email Addresses:' + '\n' + '\n'.join(extracted_email) + '\n' + '\n' + 'Found URLs:' + '\n' + '\n'.join(all_url)
-    pyperclip.copy(output)
+output = 'Found Phone Numbers:' + '\n' + '\n'.join(all_phone) + '\n' + '\n' + 'Found Email Addresses:' + '\n' + '\n'.join(extracted_email) + '\n' + '\n' + 'Found URLs:' + '\n' + '\n'.join(all_url)
+pyperclip.copy(output)

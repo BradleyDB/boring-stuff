@@ -28,15 +28,15 @@ verses = re.compile(r'''
 ''', re.VERBOSE)
 
 
-
 #TODO: Reges for Chapters
 
 chapter_names = re.compile(r'''
 ([\n]{2,}           #starts with multiple returns
 (\w+)               #followed by one word
-((\s\w+)*          #followed by a space word zero or more times
-([:  ]\w+\s{1,})*)
-[\n]{2,})                   
+(\s\w+)*            #followed by a space word zero or more times
+([:][ ]{,2}\w+)*    #followed by :, up to two spaces and a word zero or more times
+(\s\w+)*            #followed by a space and word, zero or more times
+([\n]{2,}))          #followed by 2 or more new lines         
 
 ''',re.VERBOSE)
 
@@ -45,6 +45,7 @@ chapter_names = re.compile(r'''
 extracted_verse_count = verses.findall(bible)
 extracted_chapter_names = chapter_names.findall(bible)
 print(extracted_chapter_names)
+print(len(extracted_chapter_names))
 
 #TODO: Looping function
 

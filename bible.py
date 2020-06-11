@@ -16,6 +16,16 @@ import re, pyperclip, docx
 
 
 
+##############FUNCTIONS#################
+
+def make_list(extracted_list_variable_name):
+    return [thing[0] for thing in extracted_list_variable_name]
+
+
+
+#########################################
+
+
 #Open bible file in read mode
 
 source = open('C:\\Users\\bradl\\OneDrive\\Documents\\Bible.txt')
@@ -28,7 +38,7 @@ verses = re.compile(r'''
 ''', re.VERBOSE)
 
 
-#TODO: Reges for Chapters
+#Reges for Chapter Names
 
 chapter_names = re.compile(r'''
 ([\n]{2,}           #starts with multiple returns
@@ -40,19 +50,37 @@ chapter_names = re.compile(r'''
 
 ''',re.VERBOSE)
 
-#TODO: Extract Verses from text
+#TODO: Extracted Data Variables
 
 extracted_verse_count = verses.findall(bible)
 extracted_chapter_names = chapter_names.findall(bible)
-print(extracted_chapter_names)
-print(len(extracted_chapter_names))
 
-#TODO: Looping function
+######for testing##########
+#print(extracted_chapter_names)
+#print(len(extracted_chapter_names))
+
+#TODO: add chapters to list
+
+chapter_list = make_list(extracted_chapter_names)
+count_of_chapters = len(extracted_chapter_names)
+
+verses_count = len(extracted_verse_count)
+
+
+#Output Operations
+
+nl = '\n'
+
+output = f'''
+Found the Following Number of Verses {verses_count}.
+Found the Following {count_of_chapters} Chapters:
+{nl.join(chapter_list)}'''
+
+#pyperclip.copy(output)
+#print(verses_count)
+print(output)
 
 #TODO: Loop over each verse to see number of words per verse length
 #TODO: Loop over each Chapter to see number of verses per chapter
 #TODO: Multiply the number of words per verse and verses per chapter to get words per chapter?
 #TODO: Put chapters in list/dictionary and sort by length?
-
-#Close the source txt file
-source.close()

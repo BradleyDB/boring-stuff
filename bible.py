@@ -18,17 +18,22 @@ import re, pyperclip, docx
 
 ##############FUNCTIONS#################
 
-def make_list(extracted_list_variable_name):
+def make_list(extracted_list_variable_name): #adds things to a list
     return [thing[0] for thing in extracted_list_variable_name]
 
-
+def strip_nl(list_to_strip): #strips \nl from list output
+    new_list = []
+    for item in list_to_strip:
+        new_item = item.strip('\nl')
+        new_list.append(new_item)
+    return new_list    
 
 #########################################
 
 
 #Open bible file in read mode
 
-source = open('C:\\Users\\bradl\\OneDrive\\Documents\\Bible.txt')
+source = open('location.txt')
 bible = source.read()
 
 #Regex to capture number of verses
@@ -41,46 +46,48 @@ verses = re.compile(r'''
 #Reges for Chapter Names
 
 chapter_names = re.compile(r'''
-([\n]{2,}           #starts with multiple returns
-(\w+)               #followed by one word
+([\n]+              #starts with multiple returns
+([A-Z][a-z]+)       #followed by one word
 (\s\w+)*            #followed by a space word zero or more times
 ([:][ ]{,2}\w+)*    #followed by :, up to two spaces and a word zero or more times
 (\s\w+)*            #followed by a space and word, zero or more times
-([\n]{2,}))          #followed by 2 or more new lines         
+([\n]{2,}))         #followed by 2 or more new lines         
 
 ''',re.VERBOSE)
 
-#TODO: Extracted Data Variables
+#Extracted Data Variables
 
 extracted_verse_count = verses.findall(bible)
 extracted_chapter_names = chapter_names.findall(bible)
 
-######for testing##########
-#print(extracted_chapter_names)
-#print(len(extracted_chapter_names))
+#Close the source txt file
+source.close()
 
-#TODO: add chapters to list
+#Add chapters to list
 
 chapter_list = make_list(extracted_chapter_names)
-count_of_chapters = len(extracted_chapter_names)
 
+#Add Count of Chapters and Verses
+
+count_of_chapters = len(extracted_chapter_names)
 verses_count = len(extracted_verse_count)
 
+#Clean Up List Output from Regex Search
+
+clean_chapter_list = strip_nl(chapter_list)
 
 #Output Operations
 
-nl = '\n'
+nl = '\n' #for output list to return each chapter on a new line
 
 output = f'''
 Found the Following Number of Verses {verses_count}.
-Found the Following {count_of_chapters} Chapters:
-{nl.join(chapter_list)}'''
+Found the Following {count_of_chapters} Chapters
+And the following Chapter Titles:
+{nl.join(clean_chapter_list)}'''
 
-#pyperclip.copy(output)
-#print(verses_count)
-print(output)
+pyperclip.copy(output)
 
-#TODO: Loop over each verse to see number of words per verse length
-#TODO: Loop over each Chapter to see number of verses per chapter
-#TODO: Multiply the number of words per verse and verses per chapter to get words per chapter?
-#TODO: Put chapters in list/dictionary and sort by length?
+new_doc = docx.Document()
+new_doc.add_paragraph(pyperclip.paste())
+new_doc.save('yourfilpath\filename.ext')

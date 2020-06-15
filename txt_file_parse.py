@@ -11,6 +11,11 @@ almost no restrictions whatsoever.  You may copy it, give it away or
 re-use it under the terms of the Project Gutenberg License included
 with this eBook or online at www.gutenberg.org'''
 
+'''
+This code extracts the number of verses and chapters in this edition of the Bible
+and creates a word document with those values, and a list of the chapter names.
+'''
+
 
 import re, pyperclip, docx
 

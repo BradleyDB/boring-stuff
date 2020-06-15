@@ -20,79 +20,90 @@ or sale priced item. This is why pricing has it's own function.
 ####################
 
 
-import requests, bs4, re, smtplib, pyperclip
+import requests, bs4, re, smtplib
+from datetime import datetime
+import time
 
-def get_text(product_url):
-    #this function returns the desired text from the product
-    item = {} #empty dict for item properties
-    #Retrieves Web Data
-    result = requests.get(product_url)
-    result.raise_for_status()    
-    soup = bs4.BeautifulSoup(result.text, 'html.parser')
-    css_path = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price')
-    
-    def price(css_path):
-        #this function looks to see if the item is regular or sale priced and grab the appropriate CSS selectors
-        no_price = ['Price Not Found']
-        if '''class="product-pricing__discount"''' not in str(css_path):
-          #this grabs the standard price
-            reg_price = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price > span')    
-            no_sale = reg_price[0].text.strip()
-            return no_sale
-        elif '''class="product-pricing__discount"''' in str(css_path):
-           #this grabs the regular and sale and price
-            get_prices = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price')
-            prices = get_prices[0].text.strip()
-            sale_price = re.compile(r'''(\$\d+[.]\d+)''', re.VERBOSE)
-            final_sale_price = sale_price.findall(prices)                               
-            all_prices = {'Sale Price:':final_sale_price[0], 'Regular Price:':final_sale_price[1]}
-            return all_prices
-        else:
-            #returns if no pricing information is found
-            return no_price
-    
-   
-    #Retrieves item information from CSS paths
-    manufacturer = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-buybox-intro > h1 > span')
-    name = soup.select('#js-bottomline-section')
-    
-    #calls the price function to determine if the price is on sale or not, 
-    #and return the price value(s)
-    price = price(css_path)
-    
-    
-   #Pairs cleaned up values from URL retriever with key names and adds them to a dict
-    new_manufacturer = {'Manufacturer: ' : manufacturer[0].text.strip()}
-    new_name = {'Name: ' : name[0].text.strip()}
-    new_price = {'Price: ' : price}
-    property_list = [new_manufacturer, new_name, new_price]
-    
-    
-    #need to make function to take pricing info and make it an int. 
-    #Will need to remove pricing function from the gettext first
-    
-    
-    #Adds new key value pairs to the item dict. Should I change item to list and append?
-    for thing in property_list:
-        item.update(thing)
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-    return item
+def price_alert():
+    def get_text(product_url):
+        #this function returns the desired text from the product
+        item = {} #empty dict for item properties
+        #Retrieves Web Data
+        result = requests.get(product_url)
+        result.raise_for_status()    
+        soup = bs4.BeautifulSoup(result.text, 'html.parser')
+        css_path = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price')
+        
+        def price(css_path):
+            #this function looks to see if the item is regular or sale priced and grab the appropriate CSS selectors
+            no_price = ['Price Not Found']
+            if '''class="product-pricing__discount"''' not in str(css_path):
+              #this grabs the standard price
+                reg_price = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price > span')    
+                no_sale = reg_price[0].text.strip()
+                return no_sale
+            elif '''class="product-pricing__discount"''' in str(css_path):
+               #this grabs the regular and sale and price
+                get_prices = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-pricing.js-item-price')
+                prices = get_prices[0].text.strip()
+                sale_price = re.compile(r'''(\$\d+[.]\d+)''', re.VERBOSE)
+                final_sale_price = sale_price.findall(prices)                               
+                all_prices = {'Sale Price:':final_sale_price[0], 'Regular Price:':final_sale_price[1]}
+                return all_prices
+            else:
+                #returns if no pricing information is found
+                return no_price
+        
+       
+        #Retrieves item information from CSS paths
+        manufacturer = soup.select('#content > div > div.product-overview.js-product-overview > section.product-buybox.js-product-buybox.qa-product-buybox > div.product-buybox-intro > h1 > span')
+        name = soup.select('#js-bottomline-section')
+        
+        #calls the price function to determine if the price is on sale or not, 
+        #and return the price value(s)
+        price = price(css_path)
+        
+        
+       #Pairs cleaned up values from URL retriever with key names and adds them to a dict
+        new_manufacturer = {'Manufacturer: ' : manufacturer[0].text.strip()}
+        new_name = {'Name: ' : name[0].text.strip()}
+        new_price = {'Price: ' : price}
+        property_list = [new_manufacturer, new_name, new_price]
+        
+        
+        #need to make function to take pricing info and make it an int. 
+        #Will need to remove pricing function from the gettext first
+        
+        
+        #Adds new key value pairs to the item dict. Should I change item to list and append?
+        for thing in property_list:
+            item.update(thing)
+    
+        return item
+    
+    my_item = get_text('https://www.backcountry.com/arc-teryx-component-t-shirt-mens?skid=ARCZ93E-BLAHEA-L&ti=U2VhcmNoIFJlc3VsdHM6YXJjdGVyeXggbWVuczoxOjM6YXJjdGVyeXggbWVucw==')
+    
+    def send_email():
+        #this function generates the email price alert
+        connection = smtplib.SMTP('smtp.gmail.com', 587)
+        connection.ehlo()
+        connection.starttls()
+        connection.login('your_email', 'your_password')
+        connection.sendmail('from_email', 'to_email', 'Subject: My Custom Price Alert\n\nThe following item you are following is on sale!\n\n'+ str(my_item) +'\n\nThis email was generated using the price_email python script\n\n\nkind regards,\nNAME')
+        connection.quit()
 
-#this is the information on the selected item
-my_item = get_text('https://www.backcountry.com/arc-teryx-component-t-shirt-mens?skid=ARCZ93E-BLAHEA-L&ti=U2VhcmNoIFJlc3VsdHM6YXJjdGVyeXggbWVuczoxOjM6YXJjdGVyeXggbWVucw==')
+    #this conditionally sends an email if my_item is on sale    
+    try:
+        if my_item.get('Price: ',{}).get('Sale Price:') !=None:
+            #send_email() #enable this line to actually send the email
+            print('This worked')
+    except:
+        pass
 
-def send_email():
-    #this function generates the email price alert
-    connection = smtplib.SMTP('smtp.gmail.com', 587)
-    connection.ehlo()
-    connection.starttls()
-    connection.login('your_email', 'your_password')
-    connection.sendmail('from_email', 'to_email', 'Subject: My Custom Price Alert\n\nThe following item you are following is on sale!\n\n'+ str(my_item) +'\n\nThis email was generated using the price_email python script\n\n\nkind regards,\nNAME')
-    connection.quit()
-
-#this conditionally sends an email if my_item is on sale    
-try:
-    if my_item.get('Price: ',{}).get('Sale Price:') !=None:
-        send_email()
-except:
-    print('No Action')
+#this schedules the program to be run once a day, so the email will send if it goes on sale
+scheduler = BlockingScheduler()
+scheduler.add_job(price_alert,'interval', days=1, start_date='2020-06-15 14:02:00', end_date='2020-07-15 14:05:00')        
+scheduler.start()
+scheduler.shutdown()

@@ -87,7 +87,7 @@ def send_email():
     connection.ehlo()
     connection.starttls()
     connection.login('your_email', 'your_password')
-    connection.sendmail('from_email', 'to_email', 'Subject: My Custom Price Alert\n\nThe following item you are following is on sale!\n\n'+ str(shirt) +'\n\nThis email was generated using the price_email python script\n\n\nkind regards,\nNAME')
+    connection.sendmail('from_email', 'to_email', 'Subject: My Custom Price Alert\n\nThe following item you are following is on sale!\n\n'+ str(my_item) +'\n\nThis email was generated using the price_email python script\n\n\nkind regards,\nNAME')
     connection.quit()
 
 #this conditionally sends an email if my_item is on sale    

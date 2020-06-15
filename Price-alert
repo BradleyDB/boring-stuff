@@ -78,7 +78,8 @@ def get_text(product_url):
 
     return item
 
-shirt = get_text('https://www.backcountry.com/arc-teryx-component-t-shirt-mens?skid=ARCZ93E-BLAHEA-L&ti=U2VhcmNoIFJlc3VsdHM6YXJjdGVyeXggbWVuczoxOjM6YXJjdGVyeXggbWVucw==')
+#this is the information on the selected item
+my_item = get_text('https://www.backcountry.com/arc-teryx-component-t-shirt-mens?skid=ARCZ93E-BLAHEA-L&ti=U2VhcmNoIFJlc3VsdHM6YXJjdGVyeXggbWVuczoxOjM6YXJjdGVyeXggbWVucw==')
 
 def send_email():
     #this function generates the email price alert
@@ -88,5 +89,10 @@ def send_email():
     connection.login('your_email', 'your_password')
     connection.sendmail('from_email', 'to_email', 'Subject: My Custom Price Alert\n\nThe following item you are following is on sale!\n\n'+ str(shirt) +'\n\nThis email was generated using the price_email python script\n\n\nkind regards,\nNAME')
     connection.quit()
-    
-send_email()    
+
+#this conditionally sends an email if my_item is on sale    
+try:
+    if my_item.get('Price: ',{}).get('Sale Price:') !=None:
+        send_email()
+except:
+    print('No Action')

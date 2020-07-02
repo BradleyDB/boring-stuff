@@ -77,7 +77,7 @@ def get_text(product_url):
 
 #Returning the outputs
 shirt = get_text('https://www.backcountry.com/arc-teryx-component-t-shirt-mens?skid=ARCZ93E-BLAHEA-L&ti=U2VhcmNoIFJlc3VsdHM6YXJjdGVyeXggbWVuczoxOjM6YXJjdGVyeXggbWVucw==')
-pack = get_text('https://www.backcountry.com/the-north-face-hydra-26l-backpack-tnf05cf?skid=TNF05CF-CITYELOR-SM&ti=UExQIFJ1bGUgQmFzZWQ6QW4gQWR2ZW50dXJlLUZpbGxlZCBGYXRoZXIncyBEYXk6MTo3Og==')
+#pack = get_text('https://www.backcountry.com/the-north-face-hydra-26l-backpack-tnf05cf?skid=TNF05CF-CITYELOR-SM&ti=UExQIFJ1bGUgQmFzZWQ6QW4gQWR2ZW50dXJlLUZpbGxlZCBGYXRoZXIncyBEYXk6MTo3Og==')
 
-print(pack)
+#print(pack)
 print(shirt)

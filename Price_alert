@@ -14,6 +14,9 @@ The way backcountry codes their pricing requires additional conditional
 statements to retrieve pricing information depending on if it is a regular
 or sale priced item. This is why pricing has it's own function.
 
+Note: CSS tags and/or URLs may need tweaking for this to run properly as they change over time.
+Code functioned as intended originally, but may need these adjustments.
+
 '''
 
 
